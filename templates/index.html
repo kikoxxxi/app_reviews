@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<!-- <div class="pure-g">
+<div class="pure-u-1-24">
+    <span></span>
+</div>
+<div class="pure-u-23-24"> -->
+
+    <div class="header">
+        <h1>Search Hear!</h1>
+        
+        <form class="pure-form" action="/search/" method="get">
+    <input class="pure-input-3-3" type=placeholder="search">
+    <h2>Input the app'name or id</h2>
+    </form>
+    </div>
+    
+                    
+    {% for app in app_list %}
+        <section class="post">
+            <header class="post-header">
+                <h2 class="post-title"><a href="{% url "bubble" id=app.app_id %}">{{ app.app_name }}</a></h2>
+                    <p class="post-meta">
+                        Category: <a class="post-category post-category-js" href="#">{{ app.app_category }}</a>
+                    </p>
+            </header>
+        </section>
+    {% endfor %}
+
+<!-- </div>
+</div> -->
+{% endblock %}

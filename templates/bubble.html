@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div id="main">
+    <div class="header">
+        <h1>{{app.app_name}}</h1>
+        <h2>{{app.app_category}}</h2>
+    </div>
+
+    <div class="content">
+    <div id="container" style="height: 560px; width: 760px"></div>
+    <script type="text/javascript">
+      var dom = document.getElementById("container");
+      var myChart = echarts.init(dom);
+      var app = {};
+      option = null;
+      option = {
+          title : {
+              text: '评分占比',
+              subtext: '数据来源：AppStore',
+              x:'left'
+          },
+          tooltip : {
+              trigger: 'item',
+              formatter: "{a} <br/>{b} : {c} ({d}%)"
+          },
+         
+          series : [
+              {
+                  name: '',
+                  type: 'pie',
+                  radius : '55%',
+                  center: ['50%', '60%'],
+                  data:[
+                        {value:{{rating_dict.1}}, name:'一星'},
+                        {value:{{rating_dict.2}}, name:'二星'},
+                        {value:{{rating_dict.3}}, name:'三星'},
+                        {value:{{rating_dict.4}}, name:'四星'},
+                        {value:{{rating_dict.5}}, name:'五星'},
+                  ],
+                  itemStyle: {
+                      emphasis: {
+                          shadowBlur: 10,
+                          shadowOffsetX: 0,
+                          shadowColor: 'rgba(0, 0, 0, 0.5)'
+                      }
+                  }
+              }
+          ]
+      };
+
+      if (option && typeof option === "object") {
+          myChart.setOption(option, true);
+      }
+    </script>
+    <h4>评论关键词频率</h4>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <svg width="760" height="660" font-family="sans-serif" font-size="12" text-anchor="middle"></svg>
+    <script>
+      var svg = d3.select("svg"),
+      width = +svg.attr("width"),
+      height = +svg.attr("height");
+      var format = d3.format(",d");
+      var color = d3.scaleOrdinal(d3.schemeCategory20c);  //设置不同颜色
+      var pack = d3.pack()
+          .size([width, height])
+          .padding(1.5);  //设置间距
+
+      d3.csv("{% static "countwords.csv" %}", function(d) {
+          d.value = +d.value; //将d.value值转换为正数数值类型
+          if (d.value) return d;  //过滤掉csv文件中无效的数据，即value为0的数据
+        }, function(error, classes) {
+          if (error) throw error;
+          var root = d3.hierarchy({children: classes})
+              .sum(function(d) { return d.value; })  //数遍历整个数组，并且计算每个节点上所有子节点的value总和，这里因为是单个节点，因此直接返回value
+              .each(function(d) {
+                if (id = d.data.id) {
+                var id, i = id.lastIndexOf(".");
+                d.id = id;
+                d.package = id.slice(0, i);
+                d.class = id.slice(i + 1);
+        }
+      });
+
+      var node = svg.selectAll(".node")
+          .data(pack(root).leaves())
+          .enter().append("g")
+          .attr("class", "node")
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+      node.append("circle")
+          .attr("id", function(d) { return d.id; })
+          .attr("r", function(d) { return d.r; })
+          .style("fill", function(d) { return color(d.package); });
+
+      node.append("clipPath")
+          .attr("id", function(d) { return "clip-" + d.id; })
+          .append("use")
+          .attr("xlink:href", function(d) { return "#" + d.id; });
+
+      node.append("text")
+          .text(function(d) { return d.class.substring(0, d.r / 3);});
+
+      node.append("title")
+          .text(function(d) { return "数量：" + format(d.value); });
+    });
+    </script>
+        <h1>kikoxxxi</h1>
+    </div>
+</div>
+{% endblock %}
+
