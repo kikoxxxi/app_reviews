@@ -29,7 +29,7 @@ class AppDAL():
         self.cursor = self.client.cursor()
         query_sql = "SELECT id FROM reviews_app WHERE app_id=%s"
         self.cursor.execute(query_sql, (app_id))
-        result = self.cursor.fetchone()[0]
+        result = self.cursor.fetchone()
         self.client.commit()
         self.client.close()
         return result
@@ -45,6 +45,28 @@ class ReviewsContentDAL():
                                          kwargs["review_title"], kwargs["review_split"], kwargs["review_app_id_id"], now))
         self.client.commit()
         self.client.close()
+
+    # 根据review_app_id_id号查找记录
+    def query_one_set_by_id(self, review_app_id):
+        self.client = pymysql.connect(**MYSQL_CONFIG)
+        self.cursor = self.client.cursor(pymysql.cursors.DictCursor)
+        query_sql = "SELECT * FROM reviews_reviewscontent WHERE review_app_id_id=%s"
+        self.cursor.execute(query_sql, (review_app_id))
+        result = self.cursor.fetchall()
+        self.client.commit()
+        self.client.close()
+        return result
+
+    # 根据review_app_id_id号,review_content查找记录
+    def query_content_by_id(self, review_app_id, review_content):
+        self.client = pymysql.connect(**MYSQL_CONFIG)
+        self.cursor = self.client.cursor(pymysql.cursors.DictCursor)
+        query_sql = "SELECT * FROM reviews_reviewscontent WHERE review_app_id_id=%s and review_content=%s"
+        self.cursor.execute(query_sql, (review_app_id, review_content))
+        result = self.cursor.fetchall()
+        self.client.commit()
+        self.client.close()
+        return result
 
     # 查询所有还没分词的记录
     def query_all_not_split(self):
