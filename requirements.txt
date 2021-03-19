@@ -18,7 +18,7 @@ idna==2.6
 idna-ssl==1.0.1
 incremental==17.5.0
 jieba==0.39
-Jinja2==2.10
+Jinja2==2.11.3
 lxml==4.2.1
 MarkupSafe==1.0
 multidict==4.1.0
